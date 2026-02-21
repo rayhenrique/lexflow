@@ -59,7 +59,9 @@ export function AppHeader() {
 
   const navItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutGrid },
-    { href: "/usuarios", label: "Usuários", icon: Users },
+    ...(role === "gestor"
+      ? [{ href: "/usuarios", label: "Usuários", icon: Users }]
+      : []),
     { href: "/relatorios", label: "Relatórios", icon: FileChartColumn },
   ];
 

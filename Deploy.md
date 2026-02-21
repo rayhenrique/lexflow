@@ -30,7 +30,7 @@ cd htdocs/lexflow.kltecnologia.com
 ```
 4. Clone o repositório (privado) via SSH:
 ```bash
-git clone git@github.com:rayhenrique/lexflow.git .
+git clone https://github.com/rayhenrique/lexflow.git .
 ```
 5. Se necessário, configure chave SSH no servidor para acesso ao GitHub.
 
@@ -61,7 +61,8 @@ npm run build
 ### Padrão recomendado: PM2
 ```bash
 npm install -g pm2
-pm2 start npm --name "lexflow" -- start
+pm2 delete lexflow
+PORT=3011 pm2 start npm --name "lexflow" -- start
 pm2 save
 pm2 startup
 ```
@@ -70,7 +71,7 @@ Comandos operacionais:
 ```bash
 pm2 status
 pm2 logs lexflow
-pm2 restart lexflow
+pm2 restart lexflow --update-env
 pm2 stop lexflow
 ```
 

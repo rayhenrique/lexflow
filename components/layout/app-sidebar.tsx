@@ -16,27 +16,30 @@ import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import { useWorkspace } from "@/components/providers/workspace-provider";
 
-const navItems = [
-  {
-    href: "/dashboard",
-    label: "Dashboard",
-    icon: LayoutGrid,
-  },
-  {
-    href: "/usuarios",
-    label: "Usuários",
-    icon: Users,
-  },
-  {
-    href: "/relatorios",
-    label: "Relatórios",
-    icon: FileChartColumn,
-  },
-];
-
 export function AppSidebar() {
   const pathname = usePathname();
   const { role } = useWorkspace();
+  const navItems = [
+    {
+      href: "/dashboard",
+      label: "Dashboard",
+      icon: LayoutGrid,
+    },
+    ...(role === "gestor"
+      ? [
+          {
+            href: "/usuarios",
+            label: "Usuários",
+            icon: Users,
+          },
+        ]
+      : []),
+    {
+      href: "/relatorios",
+      label: "Relatórios",
+      icon: FileChartColumn,
+    },
+  ];
   const financeiroOpen = pathname.startsWith("/financeiro");
   const cadastrosOpen = pathname.startsWith("/cadastros");
   const administracaoOpen = pathname.startsWith("/administracao");

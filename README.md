@@ -71,7 +71,8 @@ Para subir em produção com PM2:
 ```bash
 npm ci
 npm run build
-pm2 start npm --name "lexflow" -- start
+pm2 delete lexflow
+PORT=3011 pm2 start npm --name "lexflow" -- start
 pm2 save
 pm2 startup
 ```
@@ -81,7 +82,7 @@ Comandos de operação:
 ```bash
 pm2 status
 pm2 logs lexflow
-pm2 restart lexflow
+pm2 restart lexflow --update-env
 pm2 stop lexflow
 ```
 
