@@ -26,7 +26,7 @@ su - kltecnologia-lexflow
 ```
 3. Entre no diretório do site criado no CloudPanel:
 ```bash
-cd /htdocs/lexflow.kltecnologia.com
+cd htdocs/lexflow.kltecnologia.com
 ```
 4. Clone o repositório (privado) via SSH:
 ```bash
