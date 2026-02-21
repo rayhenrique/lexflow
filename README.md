@@ -65,6 +65,26 @@ npm run build
 npm run start
 ```
 
+## Produção com PM2
+Para subir em produção com PM2:
+
+```bash
+npm ci
+npm run build
+pm2 start npm --name "lexflow" -- start
+pm2 save
+pm2 startup
+```
+
+Comandos de operação:
+
+```bash
+pm2 status
+pm2 logs lexflow
+pm2 restart lexflow
+pm2 stop lexflow
+```
+
 ## Atualização do código (Git)
 ```bash
 git pull origin main

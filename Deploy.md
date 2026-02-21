@@ -8,10 +8,12 @@ Repositório oficial:
 1. Acesse o CloudPanel da VPS.
 2. Crie um novo site:
    - `Add Site` → **Node.js App**
-   - Domain: seu domínio final (ex: `app.seudominio.com`)
-   - Node.js Version: **20 LTS**
-   - App Port: **3000**
+   - Domain: **`lexflow.kltecnologia.com`**
+   - Node.js Version: **22 LTS** (conforme ambiente já criado)
+   - App Port: **`3011`**
+   - Site User: **`kltecnologia-lexflow`**
 3. Salve e aguarde o provisionamento do diretório do site (ex: `htdocs`).
+4. Segurança: se a senha do usuário do site foi exposta em print/chat, gere uma nova senha no CloudPanel imediatamente.
 
 ## B) Configuração do repositório (SSH)
 1. Conecte na VPS:
@@ -20,7 +22,7 @@ ssh root@SEU_IP
 ```
 2. Entre no diretório do site criado no CloudPanel:
 ```bash
-cd /home/cloudpanel/htdocs/SEU_DOMINIO
+cd /home/cloudpanel/htdocs/lexflow.kltecnologia.com
 ```
 3. Clone o repositório (privado) via SSH:
 ```bash
@@ -52,13 +54,7 @@ npm ci
 npm run build
 ```
 
-### Opção 1 (recomendada): processo Node gerenciado pelo CloudPanel
-- Configure no painel do site:
-  - Start Command: `npm run start`
-  - Port: `3000`
-- Reinicie o app pelo botão `Restart`.
-
-### Opção 2: PM2
+### Padrão recomendado: PM2
 ```bash
 npm install -g pm2
 pm2 start npm --name "lexflow" -- start
@@ -66,9 +62,21 @@ pm2 save
 pm2 startup
 ```
 
+Comandos operacionais:
+```bash
+pm2 status
+pm2 logs lexflow
+pm2 restart lexflow
+pm2 stop lexflow
+```
+
+Observação:
+- Mesmo usando PM2, mantenha a porta do app em `3011` no CloudPanel.
+- O reverse proxy/Nginx do CloudPanel encaminha para a porta configurada do Node app.
+
 ## E) Domínio e SSL
 1. Na Hostinger (DNS), crie/edite registro **A**:
-   - Host: `app` (ou `@`)
+   - Host: `lexflow` (subdomínio de `kltecnologia.com`)
    - Value: IP da VPS
 2. No CloudPanel, abra o site e emita SSL:
    - `SSL/TLS` → **Let's Encrypt**
@@ -105,7 +113,7 @@ Use este procedimento se o deploy causar erro crítico em produção.
 Quando houver atualização no repositório, use este fluxo padrão:
 
 ```bash
-cd /home/cloudpanel/htdocs/SEU_DOMINIO
+cd /home/cloudpanel/htdocs/lexflow.kltecnologia.com
 git fetch --all
 git pull origin main
 npm ci
@@ -113,8 +121,6 @@ npm run build
 ```
 
 Reinicie o processo:
-- CloudPanel: botão `Restart`
-- PM2:
 ```bash
 pm2 restart lexflow
 ```
@@ -129,7 +135,7 @@ Validação rápida pós-update:
 No servidor:
 
 ```bash
-cd /home/cloudpanel/htdocs/SEU_DOMINIO
+cd /home/cloudpanel/htdocs/lexflow.kltecnologia.com
 git fetch --all --tags
 git log --oneline -n 10
 git checkout <COMMIT_ESTAVEL>
@@ -138,8 +144,6 @@ npm run build
 ```
 
 Reinicie o processo:
-- CloudPanel: botão `Restart`
-- PM2:
 ```bash
 pm2 restart lexflow
 ```
