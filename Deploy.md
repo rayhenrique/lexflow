@@ -20,15 +20,19 @@ Repositório oficial:
 ```bash
 ssh root@SEU_IP
 ```
-2. Entre no diretório do site criado no CloudPanel:
+2. Troque para o usuário do site:
 ```bash
-cd /home/cloudpanel/htdocs/lexflow.kltecnologia.com
+su - kltecnologia-lexflow
 ```
-3. Clone o repositório (privado) via SSH:
+3. Entre no diretório do site criado no CloudPanel:
+```bash
+cd /htdocs/lexflow.kltecnologia.com
+```
+4. Clone o repositório (privado) via SSH:
 ```bash
 git clone git@github.com:rayhenrique/lexflow.git .
 ```
-4. Se necessário, configure chave SSH no servidor para acesso ao GitHub.
+5. Se necessário, configure chave SSH no servidor para acesso ao GitHub.
 
 ## C) Variáveis de produção
 Crie `.env.production` na raiz do projeto no servidor:
@@ -113,7 +117,7 @@ Use este procedimento se o deploy causar erro crítico em produção.
 Quando houver atualização no repositório, use este fluxo padrão:
 
 ```bash
-cd /home/cloudpanel/htdocs/lexflow.kltecnologia.com
+cd /htdocs/lexflow.kltecnologia.com
 git fetch --all
 git pull origin main
 npm ci
@@ -135,7 +139,7 @@ Validação rápida pós-update:
 No servidor:
 
 ```bash
-cd /home/cloudpanel/htdocs/lexflow.kltecnologia.com
+cd /htdocs/lexflow.kltecnologia.com
 git fetch --all --tags
 git log --oneline -n 10
 git checkout <COMMIT_ESTAVEL>
