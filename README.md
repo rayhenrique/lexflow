@@ -3,6 +3,9 @@
 
 Aplicação web com foco em controle financeiro por área de atuação (workspace), autenticação segura, RLS no Supabase e interface SPA-like com Next.js App Router.
 
+## Repositório
+- GitHub: `https://github.com/rayhenrique/lexflow`
+
 ## Tech Stack
 - **Frontend:** Next.js 16 (App Router), React 19, TypeScript
 - **UI:** Tailwind CSS, shadcn/ui, Radix UI, Lucide React
@@ -60,6 +63,13 @@ Aplicação disponível em `http://localhost:3000`.
 npm run lint
 npm run build
 npm run start
+```
+
+## Atualização do código (Git)
+```bash
+git pull origin main
+npm install
+npm run dev
 ```
 
 ## Estrutura resumida

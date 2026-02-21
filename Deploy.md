@@ -1,6 +1,9 @@
 # Deploy.md
 Guia de deploy manual do **LexFlow** em **VPS Hostinger + CloudPanel** (Next.js SSR).
 
+Repositório oficial:
+- `https://github.com/rayhenrique/lexflow`
+
 ## A) Preparação no CloudPanel
 1. Acesse o CloudPanel da VPS.
 2. Crie um novo site:
@@ -21,7 +24,7 @@ cd /home/cloudpanel/htdocs/SEU_DOMINIO
 ```
 3. Clone o repositório (privado) via SSH:
 ```bash
-git clone git@github.com:SEU_USUARIO/SEU_REPO.git .
+git clone git@github.com:rayhenrique/lexflow.git .
 ```
 4. Se necessário, configure chave SSH no servidor para acesso ao GitHub.
 
