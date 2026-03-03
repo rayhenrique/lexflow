@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { buildStatusFieldsForCreate } from "@/lib/financeiro/status-transition";
 import type {
   ClassificationRecord,
   ClientRecord,
@@ -134,7 +135,7 @@ export async function fetchRevenues(
 ) {
   let query = supabase
     .from("revenues")
-    .select("id, workspace_id, client_id, description, amount, occurred_on, status, classification_id, notes, created_at")
+    .select("id, workspace_id, client_id, description, amount, occurred_on, status, paid_on, canceled_at, canceled_reason, classification_id, notes, created_at")
     .order("occurred_on", { ascending: false });
 
   if (workspaceId !== "all") {
@@ -159,6 +160,11 @@ export async function createRevenueRecord(
     userId: string;
   },
 ) {
+  const statusFields = buildStatusFieldsForCreate({
+    status: payload.status,
+    occurredOn: payload.occurredOn,
+  });
+
   const { error } = await supabase.from("revenues").insert({
     workspace_id: payload.workspaceId,
     client_id: payload.clientId ?? null,
@@ -169,6 +175,9 @@ export async function createRevenueRecord(
     classification_id: payload.classificationId,
     notes: payload.notes || null,
     created_by: payload.userId,
+    paid_on: statusFields.paid_on,
+    canceled_at: statusFields.canceled_at,
+    canceled_reason: statusFields.canceled_reason,
   });
   if (error) throw new Error(error.message);
 }
@@ -179,7 +188,7 @@ export async function fetchExpenses(
 ) {
   let query = supabase
     .from("expenses")
-    .select("id, workspace_id, client_id, description, amount, occurred_on, status, classification_id, notes, created_at")
+    .select("id, workspace_id, client_id, description, amount, occurred_on, status, paid_on, canceled_at, canceled_reason, classification_id, notes, created_at")
     .order("occurred_on", { ascending: false });
 
   if (workspaceId !== "all") {
@@ -204,6 +213,11 @@ export async function createExpenseRecord(
     userId: string;
   },
 ) {
+  const statusFields = buildStatusFieldsForCreate({
+    status: payload.status,
+    occurredOn: payload.occurredOn,
+  });
+
   const { error } = await supabase.from("expenses").insert({
     workspace_id: payload.workspaceId,
     client_id: payload.clientId ?? null,
@@ -214,6 +228,57 @@ export async function createExpenseRecord(
     classification_id: payload.classificationId,
     notes: payload.notes || null,
     created_by: payload.userId,
+    paid_on: statusFields.paid_on,
+    canceled_at: statusFields.canceled_at,
+    canceled_reason: statusFields.canceled_reason,
   });
   if (error) throw new Error(error.message);
+}
+
+async function parseJsonResponse(response: Response) {
+  const payload = (await response.json().catch(() => null)) as
+    | { message?: string }
+    | null;
+
+  if (!response.ok) {
+    throw new Error(payload?.message ?? "Operação não concluída.");
+  }
+}
+
+export async function conciliateRevenueStatus(
+  revenueId: string,
+  payload: {
+    targetStatus: TransactionStatus;
+    paidOn?: string;
+    canceledReason?: string;
+  },
+) {
+  const response = await fetch(`/api/financeiro/revenues/${revenueId}/status`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  await parseJsonResponse(response);
+}
+
+export async function conciliateExpenseStatus(
+  expenseId: string,
+  payload: {
+    targetStatus: TransactionStatus;
+    paidOn?: string;
+    canceledReason?: string;
+  },
+) {
+  const response = await fetch(`/api/financeiro/expenses/${expenseId}/status`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  await parseJsonResponse(response);
 }

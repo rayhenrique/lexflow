@@ -37,6 +37,7 @@ import { cn } from "@/lib/utils";
 interface RevenueReportRow {
   id: string;
   occurred_on: string;
+  paid_on: string | null;
   description: string;
   amount: number;
   status: "pendente" | "pago" | "cancelado";
@@ -251,6 +252,9 @@ export function ReceitasReportModule() {
 
     const exportRows = rows.map((row) => ({
       Data: dateFormatter.format(new Date(`${row.occurred_on}T00:00:00`)),
+      DataPagamento: row.paid_on
+        ? dateFormatter.format(new Date(`${row.paid_on}T00:00:00`))
+        : "",
       Descricao: row.description,
       Cliente: row.clients?.name ?? "-",
       Categoria: row.revenue_classifications?.name ?? "-",

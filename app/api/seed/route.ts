@@ -206,6 +206,7 @@ export async function POST() {
       const revenuesPayload = Array.from({ length: revenueCount }, (_, index) => {
         const occurredOnDate = randomDateBetween(startDate, endDate);
         const occurredOn = toIsoDate(occurredOnDate);
+        const status = getTransactionStatus(occurredOnDate, now);
         return {
           workspace_id: workspace.id,
           client_id: createdClients[randomInt(0, createdClients.length - 1)].id,
@@ -214,7 +215,10 @@ export async function POST() {
           description: `Receita ${index + 1} - ${workspace.id.slice(0, 4)}`,
           amount: randomCurrency(500, 15000),
           occurred_on: occurredOn,
-          status: getTransactionStatus(occurredOnDate, now),
+          status,
+          paid_on: status === "pago" ? occurredOn : null,
+          canceled_at: null,
+          canceled_reason: null,
           created_by: createdBy,
         };
       });
@@ -227,6 +231,7 @@ export async function POST() {
       const expensesPayload = Array.from({ length: expensesCount }, (_, index) => {
         const occurredOnDate = randomDateBetween(startDate, endDate);
         const occurredOn = toIsoDate(occurredOnDate);
+        const status = getTransactionStatus(occurredOnDate, now);
         return {
           workspace_id: workspace.id,
           client_id: createdClients[randomInt(0, createdClients.length - 1)].id,
@@ -235,7 +240,10 @@ export async function POST() {
           description: `Despesa ${index + 1} - ${workspace.id.slice(0, 4)}`,
           amount: randomCurrency(50, 2000),
           occurred_on: occurredOn,
-          status: getTransactionStatus(occurredOnDate, now),
+          status,
+          paid_on: status === "pago" ? occurredOn : null,
+          canceled_at: null,
+          canceled_reason: null,
           created_by: createdBy,
         };
       });

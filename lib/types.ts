@@ -65,6 +65,9 @@ export interface RevenueRecord {
   amount: number;
   occurred_on: string;
   status: TransactionStatus;
+  paid_on: string | null;
+  canceled_at: string | null;
+  canceled_reason: string | null;
   classification_id: string;
   notes: string | null;
   created_at: string;
@@ -78,6 +81,9 @@ export interface ExpenseRecord {
   amount: number;
   occurred_on: string;
   status: TransactionStatus;
+  paid_on: string | null;
+  canceled_at: string | null;
+  canceled_reason: string | null;
   classification_id: string;
   notes: string | null;
   created_at: string;

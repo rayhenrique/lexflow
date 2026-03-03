@@ -1,5 +1,18 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
+export async function requireAuthenticatedUser() {
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "unauthorized" as const };
+  }
+
+  return { userId: user.id };
+}
+
 export async function requireGestor() {
   const supabase = await createSupabaseServerClient();
   const {

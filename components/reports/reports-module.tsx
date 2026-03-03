@@ -45,7 +45,8 @@ export function ReportsModule() {
     const monthMap = new Map<string, { receitas: number; despesas: number; date: Date }>();
     for (const revenue of data.revenues) {
       if (revenue.status !== "pago") continue;
-      const occurredOn = new Date(`${revenue.occurred_on}T00:00:00`);
+      const baseDate = revenue.paid_on ?? revenue.occurred_on;
+      const occurredOn = new Date(`${baseDate}T00:00:00`);
       const key = `${occurredOn.getFullYear()}-${String(occurredOn.getMonth() + 1).padStart(2, "0")}`;
       const entry = monthMap.get(key) ?? { receitas: 0, despesas: 0, date: new Date(occurredOn.getFullYear(), occurredOn.getMonth(), 1) };
       entry.receitas += Number(revenue.amount);
@@ -54,7 +55,8 @@ export function ReportsModule() {
 
     for (const expense of data.expenses) {
       if (expense.status !== "pago") continue;
-      const occurredOn = new Date(`${expense.occurred_on}T00:00:00`);
+      const baseDate = expense.paid_on ?? expense.occurred_on;
+      const occurredOn = new Date(`${baseDate}T00:00:00`);
       const key = `${occurredOn.getFullYear()}-${String(occurredOn.getMonth() + 1).padStart(2, "0")}`;
       const entry = monthMap.get(key) ?? { receitas: 0, despesas: 0, date: new Date(occurredOn.getFullYear(), occurredOn.getMonth(), 1) };
       entry.despesas += Number(expense.amount);
@@ -273,4 +275,3 @@ function ReportsLoading() {
     </div>
   );
 }
-

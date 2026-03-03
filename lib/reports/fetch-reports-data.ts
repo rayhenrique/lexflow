@@ -7,6 +7,7 @@ interface RevenueRow {
   description: string;
   amount: number;
   occurred_on: string;
+  paid_on: string | null;
   status: "pendente" | "pago" | "cancelado";
 }
 
@@ -16,6 +17,7 @@ interface ExpenseRow {
   description: string;
   amount: number;
   occurred_on: string;
+  paid_on: string | null;
   status: "pendente" | "pago" | "cancelado";
 }
 
@@ -42,10 +44,10 @@ export async function fetchReportsData(
 ): Promise<ReportsData> {
   let revenuesQuery = supabase
     .from("revenues")
-    .select("id, client_id, description, amount, occurred_on, status");
+    .select("id, client_id, description, amount, occurred_on, paid_on, status");
   let expensesQuery = supabase
     .from("expenses")
-    .select("id, classification_id, description, amount, occurred_on, status");
+    .select("id, classification_id, description, amount, occurred_on, paid_on, status");
   let clientsQuery = supabase.from("clients").select("id, name");
   let expenseClassificationsQuery = supabase
     .from("expense_classifications")
@@ -93,4 +95,3 @@ export async function fetchReportsData(
     expenseClassificationsMap,
   };
 }
-

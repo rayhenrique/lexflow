@@ -37,12 +37,23 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 import {
+  conciliateRevenueStatus,
   createRevenueRecord,
   fetchClients,
   fetchRevenueClassifications,
   fetchRevenues,
 } from "@/lib/modules/cadastros-financeiro-service";
 import type { RevenueRecord } from "@/lib/types";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 const currencyFormatter = new Intl.NumberFormat("pt-BR", {
   style: "currency",
@@ -53,7 +64,7 @@ export function ReceitasModule() {
   const supabase = createSupabaseBrowserClient();
   const { selectedWorkspaceId, workspaces } = useWorkspace();
   const [open, setOpen] = useState(false);
-  const [statusFilter, setStatusFilter] = useState<"todos" | "pago" | "pendente">(
+  const [statusFilter, setStatusFilter] = useState<"todos" | "pago" | "pendente" | "cancelado">(
     "todos",
   );
   const [searchTerm, setSearchTerm] = useState("");
@@ -62,6 +73,11 @@ export function ReceitasModule() {
   const [formError, setFormError] = useState<string | null>(null);
   const [editingRevenue, setEditingRevenue] = useState<RevenueRecord | null>(null);
   const [deleteRevenue, setDeleteRevenue] = useState<RevenueRecord | null>(null);
+  const [conciliateRevenue, setConciliateRevenue] = useState<RevenueRecord | null>(null);
+  const [conciliateStatus, setConciliateStatus] = useState<"pendente" | "pago" | "cancelado">("pendente");
+  const [conciliatePaidOn, setConciliatePaidOn] = useState(new Date().toISOString().slice(0, 10));
+  const [conciliateReason, setConciliateReason] = useState("");
+  const [conciliating, setConciliating] = useState(false);
   const itemsPerPage = 10;
 
   const revenueClassifications = useSWR(
@@ -118,7 +134,6 @@ export function ReceitasModule() {
             description: payload.description,
             amount: payload.amount,
             occurred_on: payload.occurredOn,
-            status: payload.status,
             classification_id: payload.classificationId,
             notes: payload.notes || null,
           })
@@ -157,6 +172,27 @@ export function ReceitasModule() {
       setDeleteRevenue(null);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Erro ao excluir receita.");
+    }
+  }
+
+  async function handleConciliationSubmit() {
+    if (!conciliateRevenue) return;
+
+    try {
+      setConciliating(true);
+      await conciliateRevenueStatus(conciliateRevenue.id, {
+        targetStatus: conciliateStatus,
+        paidOn: conciliateStatus === "pago" ? conciliatePaidOn : undefined,
+        canceledReason: conciliateStatus === "cancelado" ? conciliateReason : undefined,
+      });
+      toast.success("Status conciliado com sucesso.");
+      await revenues.mutate();
+      setConciliateRevenue(null);
+      setConciliateReason("");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Erro ao conciliar status.");
+    } finally {
+      setConciliating(false);
     }
   }
 
@@ -220,13 +256,14 @@ export function ReceitasModule() {
       <Tabs
         value={statusFilter}
         onValueChange={(value) =>
-          setStatusFilter(value as "todos" | "pago" | "pendente")
+          setStatusFilter(value as "todos" | "pago" | "pendente" | "cancelado")
         }
       >
         <TabsList>
           <TabsTrigger value="todos">Todos</TabsTrigger>
           <TabsTrigger value="pago">Realizado</TabsTrigger>
           <TabsTrigger value="pendente">Previsto</TabsTrigger>
+          <TabsTrigger value="cancelado">Cancelado</TabsTrigger>
         </TabsList>
       </Tabs>
 
@@ -317,6 +354,16 @@ export function ReceitasModule() {
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem
                             onClick={() => {
+                              setConciliateRevenue(item);
+                              setConciliateStatus(item.status);
+                              setConciliatePaidOn(item.paid_on ?? new Date().toISOString().slice(0, 10));
+                              setConciliateReason(item.canceled_reason ?? "");
+                            }}
+                          >
+                            Conciliar status
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
                               setEditingRevenue(item);
                               setOpen(true);
                             }}
@@ -394,11 +441,83 @@ export function ReceitasModule() {
               clients={clients.data ?? []}
               loading={saving}
               initialData={editingRevenue}
+              statusReadonly={Boolean(editingRevenue)}
               onSubmit={handleSubmit}
             />
           </div>
         </SheetContent>
       </Sheet>
+
+      <Dialog
+        open={Boolean(conciliateRevenue)}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) setConciliateRevenue(null);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Conciliar status da receita</DialogTitle>
+            <DialogDescription>
+              Atualize o status com rastreabilidade de pagamento e cancelamento.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-4 space-y-4">
+            <div className="space-y-2">
+              <Label>Status de destino</Label>
+              <Select
+                value={conciliateStatus}
+                onValueChange={(value) =>
+                  setConciliateStatus(value as "pendente" | "pago" | "cancelado")
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pendente">Pendente</SelectItem>
+                  <SelectItem value="pago">Pago</SelectItem>
+                  <SelectItem value="cancelado">Cancelado</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {conciliateStatus === "pago" ? (
+              <div className="space-y-2">
+                <Label>Data de pagamento</Label>
+                <Input
+                  type="date"
+                  value={conciliatePaidOn}
+                  onChange={(event) => setConciliatePaidOn(event.target.value)}
+                />
+              </div>
+            ) : null}
+
+            {conciliateStatus === "cancelado" ? (
+              <div className="space-y-2">
+                <Label>Motivo do cancelamento (opcional)</Label>
+                <Textarea
+                  value={conciliateReason}
+                  onChange={(event) => setConciliateReason(event.target.value)}
+                />
+              </div>
+            ) : null}
+
+            <div className="flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setConciliateRevenue(null)}
+                disabled={conciliating}
+              >
+                Cancelar
+              </Button>
+              <Button type="button" onClick={handleConciliationSubmit} disabled={conciliating}>
+                {conciliating ? "Salvando..." : "Confirmar"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <AlertDialog
         open={Boolean(deleteRevenue)}

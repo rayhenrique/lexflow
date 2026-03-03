@@ -38,6 +38,7 @@ interface FormularioDespesaProps {
   classifications: ClassificationRecord[];
   clients: ClientRecord[];
   loading: boolean;
+  statusReadonly?: boolean;
   onSubmit: (payload: {
     workspaceId: string;
     clientId: string | null;
@@ -55,6 +56,9 @@ interface FormularioDespesaProps {
     description: string;
     amount: number;
     occurred_on: string;
+    paid_on: string | null;
+    canceled_at: string | null;
+    canceled_reason: string | null;
     classification_id: string;
     status: TransactionStatus;
     notes: string | null;
@@ -67,6 +71,7 @@ export function FormularioDespesa({
   classifications,
   clients,
   loading,
+  statusReadonly = false,
   onSubmit,
   initialData = null,
 }: FormularioDespesaProps) {
@@ -348,6 +353,7 @@ export function FormularioDespesa({
           onValueChange={(value) =>
             setForm((prev) => ({ ...prev, status: value as TransactionStatus }))
           }
+          disabled={statusReadonly}
         >
           <SelectTrigger>
             <SelectValue />
@@ -359,6 +365,18 @@ export function FormularioDespesa({
           </SelectContent>
         </Select>
       </Field>
+
+      {initialData?.paid_on ? (
+        <p className="text-xs text-zinc-500">Pagamento registrado em: {initialData.paid_on}</p>
+      ) : null}
+      {initialData?.canceled_at ? (
+        <p className="text-xs text-zinc-500">
+          Cancelado em: {new Date(initialData.canceled_at).toLocaleString("pt-BR")}
+        </p>
+      ) : null}
+      {initialData?.canceled_reason ? (
+        <p className="text-xs text-zinc-500">Motivo do cancelamento: {initialData.canceled_reason}</p>
+      ) : null}
 
       <Field label="Observação">
         <Textarea

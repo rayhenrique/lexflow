@@ -49,6 +49,7 @@ Execute os scripts da pasta `supabase/sql/` **na ordem**:
 10. `supabase/sql/010_administracao_auditoria.sql`
 11. `supabase/sql/011_auditoria_retencao_e_limpeza.sql`
 12. `supabase/sql/012_firm_settings_e_logos.sql`
+13. `supabase/sql/013_financeiro_conciliacao_status.sql`
 
 ## Rodando localmente
 ```bash

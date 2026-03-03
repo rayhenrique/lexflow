@@ -14,12 +14,14 @@ import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 interface RevenueBalanceRow {
   amount: number;
   occurred_on: string;
+  paid_on: string | null;
   status: "pendente" | "pago" | "cancelado";
 }
 
 interface ExpenseBalanceRow {
   amount: number;
   occurred_on: string;
+  paid_on: string | null;
   status: "pendente" | "pago" | "cancelado";
 }
 
@@ -111,11 +113,11 @@ export function BalancoReportModule() {
     try {
       let revenuesQuery = supabase
         .from("revenues")
-        .select("amount, occurred_on, status")
+        .select("amount, occurred_on, paid_on, status")
         .eq("status", "pago");
       let expensesQuery = supabase
         .from("expenses")
-        .select("amount, occurred_on, status")
+        .select("amount, occurred_on, paid_on, status")
         .eq("status", "pago");
 
       if (selectedWorkspaceId !== "all") {
@@ -123,12 +125,12 @@ export function BalancoReportModule() {
         expensesQuery = expensesQuery.eq("workspace_id", selectedWorkspaceId);
       }
       if (filters.startDate) {
-        revenuesQuery = revenuesQuery.gte("occurred_on", filters.startDate);
-        expensesQuery = expensesQuery.gte("occurred_on", filters.startDate);
+        revenuesQuery = revenuesQuery.gte("paid_on", filters.startDate);
+        expensesQuery = expensesQuery.gte("paid_on", filters.startDate);
       }
       if (filters.endDate) {
-        revenuesQuery = revenuesQuery.lte("occurred_on", filters.endDate);
-        expensesQuery = expensesQuery.lte("occurred_on", filters.endDate);
+        revenuesQuery = revenuesQuery.lte("paid_on", filters.endDate);
+        expensesQuery = expensesQuery.lte("paid_on", filters.endDate);
       }
 
       const [{ data: revenues, error: revenuesError }, { data: expenses, error: expensesError }] =
@@ -140,7 +142,8 @@ export function BalancoReportModule() {
 
       const monthMap = new Map<string, BalanceMonthRow>();
       for (const row of (revenues ?? []) as RevenueBalanceRow[]) {
-        const date = new Date(`${row.occurred_on}T00:00:00`);
+        const baseDate = row.paid_on ?? row.occurred_on;
+        const date = new Date(`${baseDate}T00:00:00`);
         const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
         const entry = monthMap.get(key) ?? {
           monthKey: key,
@@ -155,7 +158,8 @@ export function BalancoReportModule() {
       }
 
       for (const row of (expenses ?? []) as ExpenseBalanceRow[]) {
-        const date = new Date(`${row.occurred_on}T00:00:00`);
+        const baseDate = row.paid_on ?? row.occurred_on;
+        const date = new Date(`${baseDate}T00:00:00`);
         const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
         const entry = monthMap.get(key) ?? {
           monthKey: key,
