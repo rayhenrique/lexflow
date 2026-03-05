@@ -108,8 +108,8 @@ export function UserSheet({
       return;
     }
 
-    if (role === "associado" && workspaceIds.length === 0) {
-      setError("Usuário associado precisa estar vinculado a pelo menos uma área.");
+    if (role !== "gestor" && workspaceIds.length === 0) {
+      setError("Usuário não gestor precisa estar vinculado a pelo menos uma área.");
       return;
     }
 
@@ -240,6 +240,7 @@ export function UserSheet({
               <SelectContent>
                 <SelectItem value="gestor">gestor</SelectItem>
                 <SelectItem value="associado">associado</SelectItem>
+                <SelectItem value="operador">operador</SelectItem>
               </SelectContent>
             </Select>
           </div>

@@ -58,11 +58,15 @@ export function AppHeader() {
     userName?.trim() || userEmail?.split("@")[0] || "Usuário";
 
   const navItems = [
-    { href: "/dashboard", label: "Dashboard", icon: LayoutGrid },
+    ...(role === "operador"
+      ? [{ href: "/financeiro/despesas", label: "Despesas", icon: LayoutGrid }]
+      : [{ href: "/dashboard", label: "Dashboard", icon: LayoutGrid }]),
     ...(role === "gestor"
       ? [{ href: "/usuarios", label: "Usuários", icon: Users }]
       : []),
-    { href: "/relatorios", label: "Relatórios", icon: FileChartColumn },
+    ...(role !== "operador"
+      ? [{ href: "/relatorios", label: "Relatórios", icon: FileChartColumn }]
+      : []),
   ];
 
   function getHeaderByPath(path: string) {
@@ -228,18 +232,20 @@ export function AppHeader() {
                   <p className="px-3 text-xs font-medium uppercase tracking-wide text-zinc-500">
                     Financeiro
                   </p>
-                  <Link
-                    href="/financeiro/receitas"
-                    onClick={handleMobileNavClick}
-                    className={cn(
-                      "ml-3 block rounded-md px-3 py-1.5 text-sm transition-colors",
-                      pathname.startsWith("/financeiro/receitas")
-                        ? "bg-zinc-100 text-zinc-900"
-                        : "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900",
-                    )}
-                  >
-                    Receitas
-                  </Link>
+                  {role !== "operador" ? (
+                    <Link
+                      href="/financeiro/receitas"
+                      onClick={handleMobileNavClick}
+                      className={cn(
+                        "ml-3 block rounded-md px-3 py-1.5 text-sm transition-colors",
+                        pathname.startsWith("/financeiro/receitas")
+                          ? "bg-zinc-100 text-zinc-900"
+                          : "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900",
+                      )}
+                    >
+                      Receitas
+                    </Link>
+                  ) : null}
                   <Link
                     href="/financeiro/despesas"
                     onClick={handleMobileNavClick}
@@ -254,35 +260,37 @@ export function AppHeader() {
                   </Link>
                 </div>
 
-                <div className="space-y-1">
-                  <p className="px-3 text-xs font-medium uppercase tracking-wide text-zinc-500">
-                    Cadastros
-                  </p>
-                  <Link
-                    href="/cadastros/clientes"
-                    onClick={handleMobileNavClick}
-                    className={cn(
-                      "ml-3 block rounded-md px-3 py-1.5 text-sm transition-colors",
-                      pathname.startsWith("/cadastros/clientes")
-                        ? "bg-zinc-100 text-zinc-900"
-                        : "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900",
-                    )}
-                  >
-                    Clientes
-                  </Link>
-                  <Link
-                    href="/cadastros/categorias"
-                    onClick={handleMobileNavClick}
-                    className={cn(
-                      "ml-3 block rounded-md px-3 py-1.5 text-sm transition-colors",
-                      pathname.startsWith("/cadastros/categorias")
-                        ? "bg-zinc-100 text-zinc-900"
-                        : "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900",
-                    )}
-                  >
-                    Categorias
-                  </Link>
-                </div>
+                {role !== "operador" ? (
+                  <div className="space-y-1">
+                    <p className="px-3 text-xs font-medium uppercase tracking-wide text-zinc-500">
+                      Cadastros
+                    </p>
+                    <Link
+                      href="/cadastros/clientes"
+                      onClick={handleMobileNavClick}
+                      className={cn(
+                        "ml-3 block rounded-md px-3 py-1.5 text-sm transition-colors",
+                        pathname.startsWith("/cadastros/clientes")
+                          ? "bg-zinc-100 text-zinc-900"
+                          : "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900",
+                      )}
+                    >
+                      Clientes
+                    </Link>
+                    <Link
+                      href="/cadastros/categorias"
+                      onClick={handleMobileNavClick}
+                      className={cn(
+                        "ml-3 block rounded-md px-3 py-1.5 text-sm transition-colors",
+                        pathname.startsWith("/cadastros/categorias")
+                          ? "bg-zinc-100 text-zinc-900"
+                          : "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900",
+                      )}
+                    >
+                      Categorias
+                    </Link>
+                  </div>
+                ) : null}
 
                 {role === "gestor" ? (
                   <div className="space-y-1">
@@ -382,10 +390,12 @@ export function AppHeader() {
                 {userEmail ?? "Conta"}
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => router.push("/conta")}>
-                <UserRound className="mr-2 h-4 w-4" />
-                Conta
-              </DropdownMenuItem>
+              {role !== "operador" ? (
+                <DropdownMenuItem onClick={() => router.push("/conta")}>
+                  <UserRound className="mr-2 h-4 w-4" />
+                  Conta
+                </DropdownMenuItem>
+              ) : null}
               <DropdownMenuItem onClick={handleSignOut}>
                 <LogOut className="mr-2 h-4 w-4" />
                 Sair

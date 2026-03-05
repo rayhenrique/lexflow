@@ -19,27 +19,36 @@ import { useWorkspace } from "@/components/providers/workspace-provider";
 export function AppSidebar() {
   const pathname = usePathname();
   const { role } = useWorkspace();
-  const navItems = [
-    {
-      href: "/dashboard",
-      label: "Dashboard",
-      icon: LayoutGrid,
-    },
-    ...(role === "gestor"
+  const navItems =
+    role === "operador"
       ? [
           {
-            href: "/usuarios",
-            label: "Usuários",
-            icon: Users,
+            href: "/financeiro/despesas",
+            label: "Despesas",
+            icon: BarChart3,
           },
         ]
-      : []),
-    {
-      href: "/relatorios",
-      label: "Relatórios",
-      icon: FileChartColumn,
-    },
-  ];
+      : [
+          {
+            href: "/dashboard",
+            label: "Dashboard",
+            icon: LayoutGrid,
+          },
+          ...(role === "gestor"
+            ? [
+                {
+                  href: "/usuarios",
+                  label: "Usuários",
+                  icon: Users,
+                },
+              ]
+            : []),
+          {
+            href: "/relatorios",
+            label: "Relatórios",
+            icon: FileChartColumn,
+          },
+        ];
   const financeiroOpen = pathname.startsWith("/financeiro");
   const cadastrosOpen = pathname.startsWith("/cadastros");
   const administracaoOpen = pathname.startsWith("/administracao");
@@ -88,17 +97,19 @@ export function AppSidebar() {
             <span>Financeiro</span>
           </div>
 
-          <Link
-            href="/financeiro/receitas"
-            className={cn(
-              "ml-6 block rounded-md px-3 py-1.5 text-sm transition-colors",
-              pathname.startsWith("/financeiro/receitas")
-                ? "bg-zinc-100 text-zinc-900"
-                : "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900",
-            )}
-          >
-            Receitas
-          </Link>
+          {role !== "operador" ? (
+            <Link
+              href="/financeiro/receitas"
+              className={cn(
+                "ml-6 block rounded-md px-3 py-1.5 text-sm transition-colors",
+                pathname.startsWith("/financeiro/receitas")
+                  ? "bg-zinc-100 text-zinc-900"
+                  : "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900",
+              )}
+            >
+              Receitas
+            </Link>
+          ) : null}
 
           <Link
             href="/financeiro/despesas"
@@ -113,7 +124,8 @@ export function AppSidebar() {
           </Link>
         </div>
 
-        <div className="mt-2 space-y-1">
+        {role !== "operador" ? (
+          <div className="mt-2 space-y-1">
           <div
             className={cn(
               "flex items-center gap-2 rounded-md px-3 py-2 text-sm",
@@ -147,7 +159,8 @@ export function AppSidebar() {
           >
             Categorias
           </Link>
-        </div>
+          </div>
+        ) : null}
 
         {role === "gestor" ? (
           <div className="mt-2 space-y-1">

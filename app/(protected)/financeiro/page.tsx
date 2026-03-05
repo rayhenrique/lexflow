@@ -1,5 +1,26 @@
 import { redirect } from "next/navigation";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import type { AppRole } from "@/lib/types";
 
-export default function FinanceiroPage() {
+export default async function FinanceiroPage() {
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("user_id", user.id)
+    .maybeSingle<{ role: AppRole }>();
+
+  if (profile?.role === "operador") {
+    redirect("/financeiro/despesas");
+  }
+
   redirect("/financeiro/receitas");
 }

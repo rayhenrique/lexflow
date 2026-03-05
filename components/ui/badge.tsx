@@ -10,6 +10,7 @@ const badgeVariants = cva(
         default: "border-zinc-200 bg-zinc-100 text-zinc-700",
         gestor: "border-zinc-900/15 bg-zinc-900 text-zinc-50",
         associado: "border-zinc-200 bg-white text-zinc-700",
+        operador: "border-blue-200 bg-blue-50 text-blue-700",
         pago: "border-emerald-200 bg-emerald-50 text-emerald-700",
         pendente: "border-amber-200 bg-amber-50 text-amber-700",
         cancelado: "border-rose-200 bg-rose-50 text-rose-700",

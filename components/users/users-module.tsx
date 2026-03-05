@@ -181,7 +181,7 @@ function UsersTable({
         cell: ({ getValue }) => {
           const role = getValue() as UserRecord["role"];
           return (
-            <Badge variant={role === "gestor" ? "gestor" : "associado"}>
+            <Badge variant={role}>
               {role}
             </Badge>
           );

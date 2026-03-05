@@ -33,7 +33,10 @@ export default async function ProtectedLayout({
     .eq("user_id", user.id)
     .maybeSingle<ProfileRow>();
 
-  const role: AppRole = profile?.role === "gestor" ? "gestor" : "associado";
+  const role: AppRole =
+    profile?.role === "gestor" || profile?.role === "operador"
+      ? profile.role
+      : "associado";
 
   let workspaces: Workspace[] = [];
 

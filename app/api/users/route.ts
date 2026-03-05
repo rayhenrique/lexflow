@@ -44,9 +44,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Senha deve ter pelo menos 8 caracteres." }, { status: 400 });
   }
 
-  if (role === "associado" && workspaceIds.length === 0) {
+  if (role !== "gestor" && workspaceIds.length === 0) {
     return NextResponse.json(
-      { message: "Associado precisa ter ao menos uma área vinculada." },
+      { message: "Usuário não gestor precisa ter ao menos uma área vinculada." },
       { status: 400 },
     );
   }

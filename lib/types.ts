@@ -1,4 +1,4 @@
-export type AppRole = "gestor" | "associado";
+export type AppRole = "gestor" | "associado" | "operador";
 export type TransactionStatus = "pendente" | "pago" | "cancelado";
 
 export type WorkspaceScope = string | "all";

@@ -45,9 +45,9 @@ export async function PATCH(
     return NextResponse.json({ message: "Campos obrigatórios ausentes." }, { status: 400 });
   }
 
-  if (role === "associado" && workspaceIds.length === 0) {
+  if (role !== "gestor" && workspaceIds.length === 0) {
     return NextResponse.json(
-      { message: "Associado precisa ter ao menos uma área vinculada." },
+      { message: "Usuário não gestor precisa ter ao menos uma área vinculada." },
       { status: 400 },
     );
   }

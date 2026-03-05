@@ -6,7 +6,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 interface ProfileRow {
   name: string | null;
-  role: "gestor" | "associado";
+  role: "gestor" | "associado" | "operador";
   default_workspace_id: string | null;
 }
 
@@ -68,7 +68,7 @@ export default async function ContaPage() {
               <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
                 Perfil
               </p>
-              <Badge variant={profile?.role === "gestor" ? "gestor" : "associado"}>
+              <Badge variant={profile?.role ?? "associado"}>
                 {profile?.role ?? "associado"}
               </Badge>
             </div>
