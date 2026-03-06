@@ -8,6 +8,7 @@ import {
   FileChartColumn,
   LayoutGrid,
   LogOut,
+  MapPinned,
   Menu,
   Settings2,
   Shield,
@@ -154,6 +155,13 @@ export function AppHeader() {
       };
     }
 
+    if (path === "/administracao/areas") {
+      return {
+        section: "Administração",
+        title: "Áreas de Atuação",
+      };
+    }
+
     if (path === "/administracao/backup") {
       return {
         section: "Administração",
@@ -297,6 +305,19 @@ export function AppHeader() {
                     <p className="px-3 text-xs font-medium uppercase tracking-wide text-zinc-500">
                       Administração
                     </p>
+                    <Link
+                      href="/administracao/areas"
+                      onClick={handleMobileNavClick}
+                      className={cn(
+                        "ml-3 flex items-center gap-2 rounded-md px-3 py-1.5 text-sm transition-colors",
+                        pathname.startsWith("/administracao/areas")
+                          ? "bg-zinc-100 text-zinc-900"
+                          : "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900",
+                      )}
+                    >
+                      <MapPinned className="h-3.5 w-3.5" />
+                      Áreas
+                    </Link>
                     <Link
                       href="/administracao/auditoria"
                       onClick={handleMobileNavClick}

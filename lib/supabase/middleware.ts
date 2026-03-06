@@ -41,6 +41,8 @@ export async function updateSession(request: NextRequest) {
     "/financeiro",
     "/cadastros",
     "/conta",
+    "/relatorios",
+    "/administracao",
   ];
   const isProtectedRoute = protectedRoutes.some((route) =>
     pathname.startsWith(route),

@@ -25,7 +25,7 @@ as $$
     select 1
     from public.profiles p
     where p.user_id = auth.uid()
-      and p.role = 'operador'::public.app_role
+      and p.role::text = 'operador'
   );
 $$;
 

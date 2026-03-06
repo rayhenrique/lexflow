@@ -51,6 +51,7 @@ Execute os scripts da pasta `supabase/sql/` **na ordem**:
 12. `supabase/sql/012_firm_settings_e_logos.sql`
 13. `supabase/sql/013_financeiro_conciliacao_status.sql`
 14. `supabase/sql/014_operador_role_e_politicas.sql`
+15. `supabase/sql/015_workspace_empresarial.sql`
 
 ## Rodando localmente
 ```bash

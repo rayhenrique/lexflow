@@ -7,6 +7,7 @@ import {
   FileChartColumn,
   FolderKanban,
   LayoutGrid,
+  MapPinned,
   Settings2,
   Shield,
   Users,
@@ -173,6 +174,19 @@ export function AppSidebar() {
               <Shield className="h-4 w-4" />
               <span>Administração</span>
             </div>
+
+            <Link
+              href="/administracao/areas"
+              className={cn(
+                "ml-6 flex items-center gap-2 rounded-md px-3 py-1.5 text-sm transition-colors",
+                pathname.startsWith("/administracao/areas")
+                  ? "bg-zinc-100 text-zinc-900"
+                  : "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900",
+              )}
+            >
+              <MapPinned className="h-3.5 w-3.5" />
+              Áreas
+            </Link>
 
             <Link
               href="/administracao/auditoria"
