@@ -105,6 +105,7 @@ Antes de testar a aplicação em produção, execute as migrations SQL no projet
 13. `supabase/sql/013_financeiro_conciliacao_status.sql`
 14. `supabase/sql/014_operador_role_e_politicas.sql`
 15. `supabase/sql/015_workspace_empresarial.sql`
+16. `supabase/sql/016_seed_categorias_despesas_todas_areas.sql`
 
 ## Checklist de go-live
 - [ ] Build sem erros (`npm run build`)
